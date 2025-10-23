@@ -1,0 +1,37 @@
+name: device_trust
+description: Lightweight device trust signals for Flutter (root/jailbreak, emulator, Frida/hook, debugger — no 3rd-party SDKs).
+version: 1.0.0
+homepage: https://github.com/mikoloy/device_trust
+repository: https://github.com/mikoloy/device_trust
+issue_tracker: https://github.com/mikoloy/device_trust/issues
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+topics:
+  - security
+  - root
+  - jailbreak
+  - emulator
+  - frida
+  - debugger
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2  # şimdilik skeleton ile uyumlu kalsın
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.mikoloy.device_trust
+        pluginClass: DeviceTrustPlugin
+      ios:
+        pluginClass: DeviceTrustPlugin
