@@ -1,0 +1,1 @@
+-keep class com.mikoloy.device_trust.DeviceTrustNative { *; }

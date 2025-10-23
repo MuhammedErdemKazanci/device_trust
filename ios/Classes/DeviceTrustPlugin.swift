@@ -10,8 +10,10 @@ public class DeviceTrustPlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
-    case "getPlatformVersion":
-      result("iOS " + UIDevice.current.systemVersion)
+    case "getDeviceTrustReport":
+      // Call DeviceTrust.buildReport() defined in DeviceTrust.swift
+      let report = DeviceTrust.buildReport()
+      result(report.toMap())
     default:
       result(FlutterMethodNotImplemented)
     }

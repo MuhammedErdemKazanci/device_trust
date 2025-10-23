@@ -1,4 +1,20 @@
 include: package:flutter_lints/flutter.yaml
 
+linter:
+  rules:
+    public_member_api_docs: true
+    always_declare_return_types: true
+    avoid_print: true
+    prefer_const_constructors: true
+    prefer_final_locals: true
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/generated_plugin_registrant.dart"
+  language:
+    strict-inference: true
+    strict-raw-types: true
+
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

@@ -1,25 +1,27 @@
-// This is a basic Flutter integration test.
-//
-// Since integration tests run in a full Flutter application, they can interact
-// with the host side of a plugin implementation, unlike Dart unit tests.
-//
-// For more information about Flutter integration tests, please see
-// https://flutter.dev/to/integration-testing
-
-
+// Integration test for device_trust plugin
+// Simple smoke test to ensure basic functionality works
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-
-import 'package:device_trust/device_trust.dart';
+import 'package:device_trust_example/main.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('getPlatformVersion test', (WidgetTester tester) async {
-    final DeviceTrust plugin = DeviceTrust();
-    final String? version = await plugin.getPlatformVersion();
-    // The version string depends on the host platform running the test, so
-    // just assert that some non-empty string is returned.
-    expect(version?.isNotEmpty, true);
+  testWidgets('App launches and button is visible',
+      (WidgetTester tester) async {
+    // Build the app
+    await tester.pumpWidget(const DeviceTrustExampleApp());
+
+    // Wait for initial render
+    await tester.pumpAndSettle();
+
+    // Verify the main button exists
+    expect(find.text('Get DeviceTrust Report'), findsOneWidget);
+
+    // Verify initial message is shown
+    expect(
+      find.text('Tap the button above to collect device trust signals.'),
+      findsOneWidget,
+    );
   });
 }

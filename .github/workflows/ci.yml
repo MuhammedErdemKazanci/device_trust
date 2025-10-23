@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  analyze_test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      
+      - name: Flutter version
+        run: flutter --version
+      
+      - name: Install dependencies
+        run: flutter pub get
+      
+      - name: Analyze code
+        run: flutter analyze
+      
+      - name: Run tests
+        run: flutter test
+
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Example pub get
+        run: cd example && flutter pub get
+
+      - name: Analyze example
+        run: cd example && flutter analyze
+
+      - name: Test example
+        run: cd example && flutter test
+      
+      - name: Validate publish
+        run: flutter pub publish --dry-run
+
+  ios_pod_lint:
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      
+      - name: Install CocoaPods
+        run: sudo gem install cocoapods --no-document
+
+      - name: CocoaPods version
+        run: pod --version
+
+      - name: Update Specs repo
+        run: pod repo update
+
+      - name: Pod lib lint
+        run: cd ios && pod lib lint --allow-warnings

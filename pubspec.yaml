@@ -1,26 +1,37 @@
 name: device_trust
-description: Lightweight device trust signals for Flutter (root/jailbreak, emulator, Frida/hook, debugger — no 3rd-party SDKs).
+description: Heuristic device integrity signals for Flutter (root/jailbreak, emulator/simulator, Frida/hook, debugger) – Android & iOS.
 version: 1.0.0
-homepage: https://github.com/mikoloy/device_trust
-repository: https://github.com/mikoloy/device_trust
-issue_tracker: https://github.com/mikoloy/device_trust/issues
+homepage: https://github.com/MuhammedErdemKazanci/device_trust
+repository: https://github.com/MuhammedErdemKazanci/device_trust
+issue_tracker: https://github.com/MuhammedErdemKazanci/device_trust/issues
+documentation: https://github.com/MuhammedErdemKazanci/device_trust#readme
+license: MIT
 
 environment:
-  sdk: ">=3.3.0 <4.0.0"
-  flutter: ">=3.19.0"
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
 
 topics:
   - security
-  - root
+  - device-integrity
+  - emulator-detection
   - jailbreak
-  - emulator
   - frida
-  - debugger
+
+platforms:
+  android:
+  ios:
+
+screenshots:
+  - description: "iOS diagnostic UI - summary & policy"
+    path: screenshots/ios-summary.png
+  - description: "Android diagnostic UI - summary & policy"
+    path: screenshots/android-summary.png
 
 dependencies:
   flutter:
     sdk: flutter
-  plugin_platform_interface: ^2.0.2  # şimdilik skeleton ile uyumlu kalsın
+  plugin_platform_interface: ^2.1.8
 
 dev_dependencies:
   flutter_test:

@@ -1,29 +1,40 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:device_trust/device_trust.dart';
 import 'package:device_trust/device_trust_platform_interface.dart';
-import 'package:device_trust/device_trust_method_channel.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-class MockDeviceTrustPlatform
-    with MockPlatformInterfaceMixin
-    implements DeviceTrustPlatform {
+class _FakePlatform extends DeviceTrustPlatform {
+  @override
+  Future<Map<String, Object?>> getReportRaw() async {
+    return {
+      'rootedOrJailbroken': true,
+      'emulator': false,
+      'devModeEnabled': false,
+      'adbEnabled': false,
+      'fridaSuspected': true,
+      'debuggerAttached': false,
+      'details': {
+        'unit': 'test',
+      },
+    };
+  }
 
   @override
-  Future<String?> getPlatformVersion() => Future.value('42');
+  Future<bool> isSupported() async => true;
 }
 
 void main() {
-  final DeviceTrustPlatform initialPlatform = DeviceTrustPlatform.instance;
+  test('DeviceTrust.getReport maps to typed model', () async {
+    DeviceTrustPlatform.instance = _FakePlatform();
 
-  test('$MethodChannelDeviceTrust is the default instance', () {
-    expect(initialPlatform, isInstanceOf<MethodChannelDeviceTrust>());
+    final r = await DeviceTrust.getReport();
+    expect(r.rootedOrJailbroken, isTrue);
+    expect(r.emulator, isFalse);
+    expect(r.fridaSuspected, isTrue);
+    expect(r.details['unit'], 'test');
   });
 
-  test('getPlatformVersion', () async {
-    DeviceTrust deviceTrustPlugin = DeviceTrust();
-    MockDeviceTrustPlatform fakePlatform = MockDeviceTrustPlatform();
-    DeviceTrustPlatform.instance = fakePlatform;
-
-    expect(await deviceTrustPlugin.getPlatformVersion(), '42');
+  test('isSupported forwards', () async {
+    DeviceTrustPlatform.instance = _FakePlatform();
+    expect(await DeviceTrust.isSupported(), isTrue);
   });
 }

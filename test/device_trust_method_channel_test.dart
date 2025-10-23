@@ -1,27 +1,32 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:device_trust/device_trust_method_channel.dart';
+import 'package:device_trust/device_trust.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
-  MethodChannelDeviceTrust platform = MethodChannelDeviceTrust();
-  const MethodChannel channel = MethodChannel('device_trust');
-
-  setUp(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
-      channel,
-      (MethodCall methodCall) async {
-        return '42';
-      },
-    );
+  test('DeviceTrustReport.fromMap defaults', () {
+    final r = DeviceTrustReport.fromMap({});
+    expect(r.rootedOrJailbroken, isFalse);
+    expect(r.emulator, isFalse);
+    expect(r.fridaSuspected, isFalse);
+    expect(r.debuggerAttached, isFalse);
+    expect(r.details, isEmpty);
   });
 
-  tearDown(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, null);
-  });
-
-  test('getPlatformVersion', () async {
-    expect(await platform.getPlatformVersion(), '42');
+  test('DeviceTrustReport.fromMap fills fields', () {
+    final r = DeviceTrustReport.fromMap({
+      'rootedOrJailbroken': true,
+      'emulator': true,
+      'devModeEnabled': true,
+      'adbEnabled': true,
+      'fridaSuspected': true,
+      'debuggerAttached': true,
+      'details': {'a': 1}
+    });
+    expect(r.rootedOrJailbroken, isTrue);
+    expect(r.emulator, isTrue);
+    expect(r.devModeEnabled, isTrue);
+    expect(r.adbEnabled, isTrue);
+    expect(r.fridaSuspected, isTrue);
+    expect(r.debuggerAttached, isTrue);
+    expect(r.details['a'], 1);
   });
 }
