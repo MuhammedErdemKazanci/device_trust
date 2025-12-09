@@ -20,14 +20,12 @@ add_library(
 find_library(log-lib log)
 find_library(android-lib android)
 
+# Support 16KB page size for Android 15+
+target_link_options(device_trust_native PRIVATE "-Wl,-z,max-page-size=16384")
+
 target_link_libraries(
     device_trust_native
     ${log-lib}
     ${android-lib}
     dl
 )
-
-# Support 16KB page size for Android 15+ on arm64-v8a devices
-if(ANDROID AND CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
-    target_link_options(device_trust_native PRIVATE -Wl,-z,max-page-size=16384)
-endif()
