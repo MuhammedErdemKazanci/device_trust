@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.1] - 2025-12-10
+
+### Fixed
+- Improved Android 15+ compatibility by applying 16KB page-size linker support to all Android ABIs instead of only arm64-v8a.
+
+---
+
 ## [1.0.0] - 2025-01-23
 
 ### Initial Release

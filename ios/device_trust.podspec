@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'device_trust'
-  s.version          = '1.0.0'
+  s.version          = '1.0.1'
   s.summary          = 'Device Trust: jailbreak/root & hook/Frida heuristics (iOS/Android)'
   s.description      = <<-DESC
 Heuristic device trust detection without third-party SDKs:

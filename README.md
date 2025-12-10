@@ -42,7 +42,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  device_trust: ^1.0.0
+  device_trust: ^1.0.1
 ```
 
 Run:
@@ -132,7 +132,7 @@ Returns `Future<bool>` indicating whether the current platform is supported.
   - `x86_64` (64-bit x86)
 - **Auto-linking**: CMake/ndk-build handles linking; no additional setup required.
 - **Compatibility**: This plugin relies on your app's Android Gradle Plugin (AGP) and Kotlin versions. If you encounter version conflicts during build, align the AGP/Kotlin versions in your app's root `build.gradle` to match the plugin's requirements (typically AGP 8.0+ and Kotlin 1.9+).
-- **16KB Page Size Support**: Android devices with 16KB page size are supported (Android 15+ on some devices). The native library is built with `-Wl,-z,max-page-size=16384` for arm64-v8a. We recommend using a modern NDK (r26+) for optimal compatibility.
+- **16KB Page Size Support**: Android devices with 16KB page size are supported (Android 15+ on some devices). The native library is built with `-Wl,-z,max-page-size=16384` for all ABIs. We recommend using a modern NDK (r26+) for optimal compatibility.
 
 ### iOS
 

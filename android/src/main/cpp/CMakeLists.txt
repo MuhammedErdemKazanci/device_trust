@@ -27,7 +27,7 @@ target_link_libraries(
     dl
 )
 
-# Support 16KB page size for Android 15+ on arm64-v8a devices
-if(ANDROID AND CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
+# Support 16KB page size for Android 15+
+if(ANDROID)
     target_link_options(device_trust_native PRIVATE -Wl,-z,max-page-size=16384)
 endif()
