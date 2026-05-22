@@ -9,12 +9,14 @@ We take the security of `device_trust` seriously. If you discover a security vul
 **Email**: [hello@mikoloyapps.com](mailto:hello@mikoloyapps.com)
 
 **Please include**:
+
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact
 - Suggested fix (if any)
 
 **Do NOT**:
+
 - Open a public issue for security vulnerabilities
 - Share the vulnerability publicly before a fix is available
 
@@ -34,17 +36,19 @@ We take the security of `device_trust` seriously. If you discover a security vul
 ## Scope
 
 This security policy applies to:
+
 - The `device_trust` Flutter plugin (this repository)
 - Example app code included in this repository
 
 Out of scope:
+
 - Third-party dependencies (report to their maintainers)
 - Social engineering attacks
 - Physical access attacks
 
 ## Security Considerations
 
-The `device_trust` plugin provides **heuristic detection** of device compromise. It is **not** a security guarantee:
+The `device_trust` plugin provides **heuristic detection** of device compromise. It is **not** a security guarantee. The choice of iOS dependency manager (CocoaPods or Swift Package Manager) does not affect the detection logic or its security properties.
 
 - **Not 100% detection**: Attackers can bypass heuristics
 - **False positives**: Some signals may trigger on legitimate devices
@@ -61,7 +65,8 @@ The `device_trust` plugin provides **heuristic detection** of device compromise.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.x.x   | :white_check_mark: |
+| 2.x.x   | :white_check_mark: |
+| 1.x.x   | :x:                |
 | < 1.0   | :x:                |
 
 Only the latest stable version receives security updates.
@@ -77,6 +82,7 @@ See [README.md](README.md#limitations--security-notes) for details.
 ## Contact
 
 For non-security questions:
+
 - [Discussions](https://github.com/MuhammedErdemKazanci/device_trust/discussions)
 - [Issues](https://github.com/MuhammedErdemKazanci/device_trust/issues)
 

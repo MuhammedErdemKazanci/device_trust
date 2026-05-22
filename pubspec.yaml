@@ -1,6 +1,6 @@
 name: device_trust
 description: Heuristic device integrity signals for Flutter (root/jailbreak, emulator/simulator, Frida/hook, debugger) – Android & iOS.
-version: 1.0.1
+version: 2.0.0
 homepage: https://github.com/MuhammedErdemKazanci/device_trust
 repository: https://github.com/MuhammedErdemKazanci/device_trust
 issue_tracker: https://github.com/MuhammedErdemKazanci/device_trust/issues
@@ -8,8 +8,8 @@ documentation: https://github.com/MuhammedErdemKazanci/device_trust#readme
 license: MIT
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.10.0"
+  sdk: ^3.11.0
+  flutter: ">=3.41.0"
 
 topics:
   - security

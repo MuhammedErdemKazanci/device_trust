@@ -2,8 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:device_trust_example/main.dart';
 
 void main() {
-  testWidgets('App renders with button and initial message',
-      (WidgetTester tester) async {
+  testWidgets('App renders with button and initial message', (
+    WidgetTester tester,
+  ) async {
     // Build the app
     await tester.pumpWidget(const DeviceTrustExampleApp());
 

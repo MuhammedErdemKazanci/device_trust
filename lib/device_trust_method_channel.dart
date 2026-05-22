@@ -17,7 +17,9 @@ class MethodChannelDeviceTrust extends DeviceTrustPlatform {
 
     if (result == null) {
       throw PlatformException(
-          code: 'NULL_RESULT', message: 'device_trust returned null');
+        code: 'NULL_RESULT',
+        message: 'device_trust returned null',
+      );
     }
 
     // Normalize keys to String

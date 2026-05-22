@@ -30,6 +30,7 @@ flutter run -d "iPhone 14"
 ```
 
 **Expected behavior:**
+
 - `emulator: true` (simulator is detected)
 - Most other flags: `false` (simulator is generally clean)
 - UI will show green/red badges accordingly
@@ -42,6 +43,7 @@ flutter run -d <device-id>
 ```
 
 **Expected behavior:**
+
 - `emulator: false`
 - `rootedOrJailbroken: false` (on non-jailbroken device)
 - `debuggerAttached: true` (if running in debug mode from Xcode)
@@ -54,6 +56,7 @@ flutter run -d emulator-5554
 ```
 
 **Expected behavior:**
+
 - `emulator: true` (emulator is detected)
 - `devModeEnabled: true` (often enabled on emulators)
 - `adbEnabled: true` (on emulators)
@@ -66,6 +69,7 @@ flutter run -d <device-id>
 ```
 
 **Expected behavior:**
+
 - `emulator: false`
 - `rootedOrJailbroken: false` (on non-rooted device)
 - `devModeEnabled: true/false` (depends on device settings)
@@ -85,9 +89,10 @@ flutter run -d <device-id>
 
 ## Understanding the Results
 
-### iOS Simulator
+### iOS Simulator Behavior
 
 Since simulators are development environments:
+
 - ✅ Detection as emulator is **expected**
 - Policy shows COMPROMISED (due to emulator flag)
 - This is normal for development
@@ -95,19 +100,22 @@ Since simulators are development environments:
 ### Production iOS Device
 
 On a non-jailbroken device:
+
 - All flags should be `false` in **Release** mode
 - Only `debuggerAttached` might be `true` in **Debug** mode
 
 ### Jailbroken iOS Device
 
 May show:
+
 - `rootedOrJailbroken: true`
 - `fridaSuspected: true` (if Frida/Cydia Substrate present)
 - Detected signals: Cydia paths, URL schemes, DYLD libraries
 
-### Android Emulator
+### Android Emulator Behavior
 
 Development environments typically show:
+
 - `emulator: true`
 - `devModeEnabled: true`
 - `adbEnabled: true`
@@ -116,6 +124,7 @@ Development environments typically show:
 ### Rooted Android Device
 
 May show:
+
 - `rootedOrJailbroken: true`
 - Detected signals: su binaries, root management apps
 
@@ -142,6 +151,7 @@ This ensures the app launches and basic UI is functional.
 ### iOS: LSApplicationQueriesSchemes
 
 The app declares URL schemes in `Info.plist`:
+
 - `cydia://`, `sileo://`, `zbra://`, `filza://`, `undecimus://`, `activator://`
 
 This is for `canOpenURL` checks only (no URLs are actually opened).
@@ -149,6 +159,7 @@ This is for `canOpenURL` checks only (no URLs are actually opened).
 ### Android: Manifest Queries
 
 The plugin's manifest declares package queries for:
+
 - Root management apps (Magisk, SuperSU, etc.)
 - Frida server
 

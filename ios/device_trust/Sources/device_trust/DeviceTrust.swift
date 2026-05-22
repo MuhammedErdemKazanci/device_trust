@@ -5,6 +5,10 @@ import Foundation
 import UIKit
 import Darwin
 
+#if SWIFT_PACKAGE
+import device_trust_native
+#endif
+
 // MARK: - DeviceTrustReport
 
 struct DeviceTrustReport {

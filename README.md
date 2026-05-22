@@ -4,12 +4,12 @@
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![CI](https://github.com/MuhammedErdemKazanci/device_trust/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/MuhammedErdemKazanci/device_trust/actions/workflows/ci.yml)
 
-**Heuristic Device Integrity Signals for Flutter**
+## Heuristic Device Integrity Signals for Flutter
 
 Lightweight detection of compromised devices: **root/jailbreak**, **emulator/simulator**, **hook/Frida**, and **debugger** attachment — for both **Android** and **iOS**. No third-party SDKs.
 
 | iOS | Android |
-|-----|---------|
+| --- | ------- |
 | ![iOS Summary](https://github.com/MuhammedErdemKazanci/device_trust/raw/main/screenshots/ios-summary.png) | ![Android Summary](https://github.com/MuhammedErdemKazanci/device_trust/raw/main/screenshots/android-summary.png) |
 
 ---
@@ -28,7 +28,7 @@ Lightweight detection of compromised devices: **root/jailbreak**, **emulator/sim
 ## Supported Platforms
 
 | Platform | Minimum Version | Notes |
-|----------|----------------|-------|
+| -------- | --------------- | ----- |
 | **Android** | API 24+ (Android 7.0) | Kotlin + C++ JNI |
 | **iOS** | iOS 13.0+ | Swift 5.0 |
 
@@ -42,7 +42,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  device_trust: ^1.0.1
+  device_trust: ^2.0.0
 ```
 
 Run:
@@ -106,7 +106,7 @@ if (jbPaths.isNotEmpty) {
 Returns a `Future<DeviceTrustReport>` with the following fields:
 
 | Field | Type | Description |
-|-------|------|-------------|
+| ----- | ---- | ----------- |
 | `rootedOrJailbroken` | `bool` | Device is rooted (Android) or jailbroken (iOS) |
 | `emulator` | `bool` | Running on emulator/simulator |
 | `fridaSuspected` | `bool` | Frida or hooking framework detected |
@@ -136,26 +136,47 @@ Returns `Future<bool>` indicating whether the current platform is supported.
 
 ### iOS
 
-- **URL Schemes**: For jailbreak detection, the plugin checks if certain URL schemes can be opened (`cydia://`, `sileo://`, etc.). Add these to your app's `Info.plist` under `LSApplicationQueriesSchemes`:
+#### Dependency Manager Support
 
-  ```xml
-  <key>LSApplicationQueriesSchemes</key>
-  <array>
-      <string>cydia</string>
-      <string>sileo</string>
-      <string>zbra</string>
-      <string>filza</string>
-      <string>undecimus</string>
-      <string>activator</string>
-  </array>
-  ```
+`device_trust` supports both **CocoaPods** and **Swift Package Manager** for
+iOS native Flutter plugin integration. Flutter application developers add and
+use `device_trust` as a normal Dart/pub dependency — no manual native
+package configuration is required.
 
-  **Note**: This is for `canOpenURL` checks only—no URLs are actually opened.
+- **Version 2.0.0+** of this Flutter package requires **Flutter 3.41.0 or later**
+  and **Dart ^3.11.0** for all consumers, regardless of iOS dependency manager.
+- **Swift Package Manager**: Enable Flutter's SPM integration via
+  `flutter config --enable-swift-package-manager`, then run your app normally.
+  Flutter resolves `device_trust` through its native Swift package target automatically.
+- **CocoaPods**: Remains fully supported for iOS native integration. CocoaPods-based
+  consumers must also meet the minimum Flutter and Dart SDK requirements as above.
+
+> **Note:** `device_trust` is a Flutter plugin, not a standalone native Swift
+> library. The supported consumer API is the Flutter package API exposed
+> from Dart.
+
+#### URL Schemes
+
+For jailbreak detection, the plugin checks if certain URL schemes can be opened (`cydia://`, `sileo://`, etc.). Add these to your app's `Info.plist` under `LSApplicationQueriesSchemes`:
+
+```xml
+<key>LSApplicationQueriesSchemes</key>
+<array>
+    <string>cydia</string>
+    <string>sileo</string>
+    <string>zbra</string>
+    <string>filza</string>
+    <string>undecimus</string>
+    <string>activator</string>
+</array>
+```
+
+**Note**: This is for `canOpenURL` checks only—no URLs are actually opened.
 
 - **Anti-Debug**: The native function `DTNDenyDebuggerAttach()` calls `ptrace(PT_DENY_ATTACH)`, but **only** in:
   - **Release** builds (not Debug)
   - **Physical devices** (not Simulator)
-  
+
   In Debug/Simulator, it's a no-op to avoid interfering with development.
 
 - **Bridging Header**: Not required. CocoaPods framework mode exposes C functions via the umbrella header, so Swift code sees them automatically.
@@ -175,6 +196,7 @@ Returns `Future<bool>` indicating whether the current platform is supported.
 ### Not 100% Detection
 
 This plugin uses **heuristic detection**, which can be bypassed by:
+
 - **Magisk Hide**, **Shamiko** (root cloaking on Android)
 - **Frida stealth mode**, **Objection** (hooking framework concealment)
 - Custom OS modifications or kernel patches
@@ -199,6 +221,7 @@ This plugin uses **heuristic detection**, which can be bypassed by:
 ## Example App
 
 The `example/` directory contains a production-level diagnostic UI that displays:
+
 - **Summary** of all flags (color-coded)
 - **Policy evaluation** (example)
 - **JSON details** (with copy-to-clipboard)
@@ -219,7 +242,7 @@ See [`example/README.md`](example/README.md) for platform-specific expectations 
 
 ### Why is there no bridging header for iOS?
 
-CocoaPods uses framework mode (`use_frameworks!`) and generates an umbrella header that includes all public headers. Swift code in the pod target sees C functions (like `DTNCollectNativeSignalsJSON`) via this umbrella, so no manual bridging header is needed.
+Under CocoaPods, framework mode (`use_frameworks!`) generates an umbrella header that includes all public headers. Under Swift Package Manager, the public header is exposed via the package's `include` directory. In both cases, Swift code sees C functions (like `DTNCollectNativeSignalsJSON`) automatically — no manual bridging header is needed.
 
 ### Why don't I see RWX segments on some devices?
 
@@ -229,6 +252,7 @@ CocoaPods uses framework mode (`use_frameworks!`) and generates an umbrella head
 ### Does this work on physical devices only?
 
 No—it works on both **emulators/simulators** and **physical devices**. However:
+
 - Emulators are flagged as `emulator: true`.
 - Some signals (like anti-debug `ptrace`) are only active on physical devices in Release mode.
 
@@ -250,6 +274,7 @@ Currently, thresholds are hardcoded in the native layer. A future version may ex
 ## Contributing
 
 Contributions are welcome! Please:
+
 1. Fork the repo
 2. Create a feature branch
 3. Add tests for new functionality
@@ -272,4 +297,4 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-**Built with ❤️ for Flutter security**
+Built with ❤️ for Flutter security

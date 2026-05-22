@@ -7,8 +7,9 @@ import 'package:device_trust_example/main.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('App launches and button is visible',
-      (WidgetTester tester) async {
+  testWidgets('App launches and button is visible', (
+    WidgetTester tester,
+  ) async {
     // Build the app
     await tester.pumpWidget(const DeviceTrustExampleApp());
 

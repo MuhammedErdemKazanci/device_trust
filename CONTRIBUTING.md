@@ -6,11 +6,14 @@ Thank you for your interest in contributing! This document outlines the process 
 
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/device_trust.git
    cd device_trust
    ```
+
 3. **Create a feature branch**:
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -79,6 +82,43 @@ If your change affects platform code:
 
 Document test results in your PR description.
 
+### 8. Validate iOS Dependency Manager Paths
+
+If your change touches iOS native code (`ios/device_trust/Sources/`), validate
+**both** CocoaPods and Swift Package Manager integration:
+
+#### CocoaPods Validation
+
+```bash
+flutter config --no-enable-swift-package-manager
+cd example && flutter build ios --simulator --no-codesign && cd ..
+cd ios && pod lib lint --allow-warnings && cd ..
+```
+
+#### Swift Package Manager Validation
+
+```bash
+flutter config --enable-swift-package-manager
+cd example && flutter build ios --simulator --no-codesign && cd ..
+```
+
+#### SPM Resolution Assertion
+
+After building the example app with SPM enabled, ensure that the build actually
+resolved `device_trust` via Swift Package Manager and not via CocoaPods fallback.
+This is enforced in CI, but contributors should verify locally as well:
+
+- Check that the generated Xcode project and/or `Package.resolved` references
+  `device_trust` as a Swift package dependency.
+
+**Requirements:**
+
+- **Flutter 3.41.0+** and **Dart 3.11.0+** are required for SPM support.
+- Do not commit absolute local filesystem paths in Xcode project files.
+  If adding the plugin as a local package in the example, ensure the
+  `project.pbxproj` reference uses a relative path
+  (e.g., `../../ios/device_trust`) with `sourceTree = "<group>"`.
+
 ## Code Style
 
 - Follow [Effective Dart](https://dart.dev/guides/language/effective-dart) guidelines
@@ -126,10 +166,11 @@ flutter run -d <device-id>    # Physical device
 ## Pull Request Process
 
 1. **Commit your changes** with clear, descriptive messages:
+
    ```bash
    git commit -m "feat: add X detection for Android"
    ```
-   
+
    Follow [Conventional Commits](https://www.conventionalcommits.org/):
    - `feat:` - New feature
    - `fix:` - Bug fix
@@ -138,6 +179,7 @@ flutter run -d <device-id>    # Physical device
    - `test:` - Adding tests
 
 2. **Push to your fork**:
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -149,6 +191,7 @@ flutter run -d <device-id>    # Physical device
    - Test results (platforms tested)
 
 4. **Sign-off commits** (Developer Certificate of Origin):
+
    ```bash
    git commit -s -m "Your message"
    ```
@@ -162,6 +205,8 @@ If your PR introduces breaking changes:
 1. Mark it clearly in the PR title: `[BREAKING]`
 2. Document migration steps in the PR description
 3. Update `CHANGELOG.md` with migration guide
+4. If changing minimum Dart or Flutter SDK requirements, update all version
+   constraints and release documentation accordingly.
 
 ## Questions?
 

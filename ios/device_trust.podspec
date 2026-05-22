@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'device_trust'
-  s.version          = '1.0.1'
+  s.version          = '2.0.0'
   s.summary          = 'Device Trust: jailbreak/root & hook/Frida heuristics (iOS/Android)'
   s.description      = <<-DESC
 Heuristic device trust detection without third-party SDKs:
@@ -17,21 +17,18 @@ Exposes a typed Flutter API via MethodChannel.
   s.swift_version    = '5.0'
   s.dependency       'Flutter'
   if s.respond_to?(:privacy_manifest_files=)
-    s.privacy_manifest_files = 'Resources/PrivacyInfo.xcprivacy'
+    s.privacy_manifest_files = 'device_trust/Sources/device_trust/PrivacyInfo.xcprivacy'
   else
     # Fallback for CocoaPods < 1.16: ship the privacy manifest as a resource
-    s.resources = ['Resources/PrivacyInfo.xcprivacy']
+    s.resources = ['device_trust/Sources/device_trust/PrivacyInfo.xcprivacy']
   end
 
-  # All source files (Swift + ObjC/C++)
-  s.source_files = 'Classes/**/*.{swift,h,m,mm,cc,cpp}'
-  
+  # All source files (Swift + ObjC/C++) — shared with SPM
+  s.source_files = 'device_trust/Sources/**/*.{swift,h,m,mm,cc,cpp}'
+
   # Specific public header (umbrella will import this)
-  s.public_header_files = 'Classes/DeviceTrust/DeviceTrustNative.h'
-  
-  # Preserve directory structure for imports
-  s.preserve_paths = 'Classes/DeviceTrust/**/*'
-  
+  s.public_header_files = 'device_trust/Sources/device_trust_native/include/**/*.h'
+
   # xcconfig for pod target
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',

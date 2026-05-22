@@ -86,14 +86,14 @@ class DeviceTrustReport {
 
   /// Converts this report to a raw map for serialization.
   Map<String, Object?> toMap() => {
-        'rootedOrJailbroken': rootedOrJailbroken,
-        'emulator': emulator,
-        'devModeEnabled': devModeEnabled,
-        'adbEnabled': adbEnabled,
-        'fridaSuspected': fridaSuspected,
-        'debuggerAttached': debuggerAttached,
-        'details': details,
-      };
+    'rootedOrJailbroken': rootedOrJailbroken,
+    'emulator': emulator,
+    'devModeEnabled': devModeEnabled,
+    'adbEnabled': adbEnabled,
+    'fridaSuspected': fridaSuspected,
+    'debuggerAttached': debuggerAttached,
+    'details': details,
+  };
 
   /// Returns a concise string representation of the main flags.
   @override
@@ -134,9 +134,10 @@ class DeviceTrust {
     Duration timeout = const Duration(milliseconds: 1500),
   }) async {
     final raw = await DeviceTrustPlatform.instance.getReportRaw().timeout(
-        timeout,
-        onTimeout: () =>
-            throw TimeoutException('device_trust: getReport timeout'));
+      timeout,
+      onTimeout: () =>
+          throw TimeoutException('device_trust: getReport timeout'),
+    );
 
     return DeviceTrustReport.fromMap(raw);
   }

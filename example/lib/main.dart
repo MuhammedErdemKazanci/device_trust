@@ -95,8 +95,9 @@ class _DeviceTrustScreenState extends State<DeviceTrustScreen> {
                       ),
                     )
                   : const Icon(Icons.security),
-              label:
-                  Text(_isLoading ? 'Analyzing...' : 'Get DeviceTrust Report'),
+              label: Text(
+                _isLoading ? 'Analyzing...' : 'Get DeviceTrust Report',
+              ),
             ),
 
             const SizedBox(height: 24),
@@ -126,7 +127,8 @@ class _DeviceTrustScreenState extends State<DeviceTrustScreen> {
                       Text(
                         _error!,
                         style: TextStyle(
-                            color: theme.colorScheme.onErrorContainer),
+                          color: theme.colorScheme.onErrorContainer,
+                        ),
                       ),
                     ],
                   ),
@@ -211,12 +213,7 @@ class _DeviceTrustScreenState extends State<DeviceTrustScreen> {
               _report!.devModeEnabled,
               Icons.developer_mode,
             ),
-            _buildFlagRow(
-              theme,
-              'ADB Enabled',
-              _report!.adbEnabled,
-              Icons.usb,
-            ),
+            _buildFlagRow(theme, 'ADB Enabled', _report!.adbEnabled, Icons.usb),
           ],
         ),
       ),
@@ -224,7 +221,11 @@ class _DeviceTrustScreenState extends State<DeviceTrustScreen> {
   }
 
   Widget _buildFlagRow(
-      ThemeData theme, String label, bool value, IconData icon) {
+    ThemeData theme,
+    String label,
+    bool value,
+    IconData icon,
+  ) {
     final color = value ? Colors.red : Colors.green;
     final iconWidget = Icon(icon, color: color, size: 20);
 
@@ -234,9 +235,7 @@ class _DeviceTrustScreenState extends State<DeviceTrustScreen> {
         children: [
           iconWidget,
           const SizedBox(width: 12),
-          Expanded(
-            child: Text(label, style: theme.textTheme.bodyMedium),
-          ),
+          Expanded(child: Text(label, style: theme.textTheme.bodyMedium)),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
@@ -311,8 +310,9 @@ class _DeviceTrustScreenState extends State<DeviceTrustScreen> {
   }
 
   Widget _buildDetailsCard(ThemeData theme) {
-    final jsonString =
-        const JsonEncoder.withIndent('  ').convert(_report!.details);
+    final jsonString = const JsonEncoder.withIndent(
+      '  ',
+    ).convert(_report!.details);
 
     return Card(
       child: Padding(
@@ -344,10 +344,7 @@ class _DeviceTrustScreenState extends State<DeviceTrustScreen> {
                 scrollDirection: Axis.horizontal,
                 child: Text(
                   jsonString,
-                  style: const TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 12,
-                  ),
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
                 ),
               ),
             ),
@@ -386,15 +383,17 @@ class _DeviceTrustScreenState extends State<DeviceTrustScreen> {
                 style: theme.textTheme.titleSmall,
               ),
               const SizedBox(height: 4),
-              ...jbPathHits.map((path) => Padding(
-                    padding: const EdgeInsets.only(left: 16, bottom: 2),
-                    child: Text(
-                      '• $path',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        fontFamily: 'monospace',
-                      ),
+              ...jbPathHits.map(
+                (path) => Padding(
+                  padding: const EdgeInsets.only(left: 16, bottom: 2),
+                  child: Text(
+                    '• $path',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontFamily: 'monospace',
                     ),
-                  )),
+                  ),
+                ),
+              ),
               const SizedBox(height: 12),
             ],
             if (urlSchemeHits.isNotEmpty) ...[
@@ -403,15 +402,17 @@ class _DeviceTrustScreenState extends State<DeviceTrustScreen> {
                 style: theme.textTheme.titleSmall,
               ),
               const SizedBox(height: 4),
-              ...urlSchemeHits.map((scheme) => Padding(
-                    padding: const EdgeInsets.only(left: 16, bottom: 2),
-                    child: Text(
-                      '• $scheme',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        fontFamily: 'monospace',
-                      ),
+              ...urlSchemeHits.map(
+                (scheme) => Padding(
+                  padding: const EdgeInsets.only(left: 16, bottom: 2),
+                  child: Text(
+                    '• $scheme',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontFamily: 'monospace',
                     ),
-                  )),
+                  ),
+                ),
+              ),
               const SizedBox(height: 12),
             ],
             if (dyldSuspicious.isNotEmpty) ...[
@@ -420,15 +421,17 @@ class _DeviceTrustScreenState extends State<DeviceTrustScreen> {
                 style: theme.textTheme.titleSmall,
               ),
               const SizedBox(height: 4),
-              ...dyldSuspicious.map((lib) => Padding(
-                    padding: const EdgeInsets.only(left: 16, bottom: 2),
-                    child: Text(
-                      '• $lib',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        fontFamily: 'monospace',
-                      ),
+              ...dyldSuspicious.map(
+                (lib) => Padding(
+                  padding: const EdgeInsets.only(left: 16, bottom: 2),
+                  child: Text(
+                    '• $lib',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontFamily: 'monospace',
                     ),
-                  )),
+                  ),
+                ),
+              ),
             ],
           ],
         ),

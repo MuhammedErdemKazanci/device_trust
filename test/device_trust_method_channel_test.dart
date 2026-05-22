@@ -19,7 +19,7 @@ void main() {
       'adbEnabled': true,
       'fridaSuspected': true,
       'debuggerAttached': true,
-      'details': {'a': 1}
+      'details': {'a': 1},
     });
     expect(r.rootedOrJailbroken, isTrue);
     expect(r.emulator, isTrue);

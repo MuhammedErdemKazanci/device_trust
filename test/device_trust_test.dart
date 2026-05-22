@@ -12,9 +12,7 @@ class _FakePlatform extends DeviceTrustPlatform {
       'adbEnabled': false,
       'fridaSuspected': true,
       'debuggerAttached': false,
-      'details': {
-        'unit': 'test',
-      },
+      'details': {'unit': 'test'},
     };
   }
 

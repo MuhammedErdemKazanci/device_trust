@@ -1,7 +1,11 @@
 // [DeviceTrust/iOS][Native] DeviceTrustNative.mm
 // Objective-C++ implementation — Mach VM, dyld, dladdr checks
 
-#import "DeviceTrustNative.h"
+#if __has_include(<device_trust/device_trust-umbrella.h>)
+#import <device_trust/DeviceTrustNative.h>
+#else
+#import "./include/device_trust_native/DeviceTrustNative.h"
+#endif
 #import <TargetConditionals.h>
 #import <mach/mach.h>
 #import <mach-o/dyld.h>

@@ -7,9 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.0] - 2026-05-22
+
+### Added
+
+- **Swift Package Manager support** for the iOS Flutter plugin implementation.
+  Flutter apps using Flutter's SPM integration now resolve `device_trust`
+  through its native Swift package target instead of falling back to CocoaPods.
+- CI validation job for Swift Package Manager iOS simulator builds alongside
+  existing CocoaPods lint.
+- Contributor documentation for validating both CocoaPods and SPM paths.
+
+### Changed
+
+- **Minimum Dart SDK** raised from `>=3.0.0 <4.0.0` to `^3.11.0`.
+- **Minimum Flutter SDK** raised from `>=3.10.0` to `>=3.41.0`.
+  These increases are required by the `FlutterFramework` package dependency
+  used for Swift Package Manager support. Projects on Flutter versions below
+  3.41.0 cannot adopt this release.
+- iOS native source files relocated from `ios/Classes/` to
+  `ios/device_trust/Sources/device_trust/` (shared by both CocoaPods and SPM).
+- CocoaPods podspec updated to reference the relocated source tree.
+
+### Preserved
+
+- Full CocoaPods and Swift Package Manager compatibility; both iOS native integration paths remain supported.
+- All consumers upgrading to `2.0.0`, including CocoaPods-based consumers, must satisfy the new Dart `^3.11.0` and Flutter `>=3.41.0` SDK constraints.
+- All runtime detection logic, MethodChannel contract, and public Dart API remain unchanged.
+
+---
+
 ## [1.0.1] - 2025-12-10
 
 ### Fixed
+
 - Improved Android 15+ compatibility by applying 16KB page-size linker support to all Android ABIs instead of only arm64-v8a.
 
 ---
@@ -19,10 +50,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Initial Release
 
 **Platform Support:**
+
 - Android (minSdk 24+)
 - iOS (13.0+)
 
 **Android Features:**
+
 - ✅ Root detection (su binaries, Magisk, SuperSU, KingRoot, etc.)
 - ✅ Emulator detection (build properties, hardware characteristics)
 - ✅ Hook/Frida detection (native C++ memory scanning via JNI)
@@ -37,6 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Fail-soft behavior: returns safe defaults on errors
 
 **iOS Features:**
+
 - ✅ Jailbreak detection
   - File path checks (Cydia, Sileo, Zebra, etc.)
   - Sandbox escape test (write to /private)
@@ -53,6 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Fail-soft behavior: returns safe defaults on errors
 
 **Flutter API:**
+
 - ✅ Typed API: `DeviceTrust.getReport()` → `DeviceTrustReport`
 - ✅ Model fields:
   - `rootedOrJailbroken: bool`
@@ -65,6 +100,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Platform check: `DeviceTrust.isSupported()`
 
 **Example App:**
+
 - ✅ Production-level diagnostic UI (Material 3)
 - ✅ Summary card (color-coded flags)
 - ✅ Policy evaluation card (example)
@@ -74,21 +110,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Comprehensive README with platform-specific expectations
 
 **Documentation:**
+
 - ✅ Root README with API reference, platform notes, FAQ
 - ✅ Example README with usage instructions
 - ✅ MIT License
 - ✅ CHANGELOG
 
 **Performance:**
+
 - ✅ Native scans: 1–5 ms typical
 - ✅ Total execution: 1–20 ms target
-
----
-
-## [Unreleased]
-
-### Planned
-- Additional signals (USB debugging status, system integrity checks)
-- Configurable thresholds (RWX segment sensitivity, timeout values)
-- Optional policy/example UI as separate package
-- Platform support expansion (macOS, Windows, Linux)
