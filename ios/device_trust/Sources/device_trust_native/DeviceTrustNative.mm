@@ -28,37 +28,87 @@
 #include <string.h>
 #include <stdlib.h>
 
-// Suspicious library names (for lowercase comparison)
+// Distinctive suspicious library names — matched as substrings of the
+// dyld image basename only (never the full path, to avoid false positives
+// such as /System/Library/PrivateFrameworks/DTXConnectionServices.framework).
 static const char* suspiciousNames[] = {
     "frida",
     "fridagadget",
     "substrate",
     "substitute",
     "tweakinject",
+    "cycript",
     "cynject",
     "libhooker",
-    "xcon",
     "sslkillswitch",
     NULL
 };
 
-// Fast lowercase substring search
-static bool containsSuspicious(const char* path) {
+// Short, collision-prone tokens — matched with word boundaries in the
+// basename (e.g. "xCon.dylib" or "libxcon.dylib" match, but
+// "DTXConnectionServices" does not).
+static const char* suspiciousBoundaryTokens[] = {
+    "xcon",
+    NULL
+};
+
+// Boundary-aware token match within a lowercase basename.
+// The match must start at the beginning of the name, after a
+// non-alphanumeric character, or after a leading "lib" prefix; and must
+// not be followed by another letter (digits are allowed, e.g. "xcon0").
+static bool matchesTokenWithBoundary(const char* lowerName, const char* token) {
+    size_t tokenLen = strlen(token);
+    const char* p = lowerName;
+    
+    while ((p = strstr(p, token)) != NULL) {
+        bool startOk = false;
+        if (p == lowerName) {
+            startOk = true;
+        } else if (!isalnum((unsigned char)p[-1])) {
+            startOk = true;
+        } else if (p == lowerName + 3 && strncmp(lowerName, "lib", 3) == 0) {
+            startOk = true; // "libxcon.dylib"
+        }
+        
+        char next = p[tokenLen];
+        bool endOk = (next == '\0') || !isalpha((unsigned char)next);
+        
+        if (startOk && endOk) return true;
+        p++;
+    }
+    return false;
+}
+
+// Suspicious image detection based on the dyld image basename
+// (exposed via the public header for regression tests)
+bool DTNIsSuspiciousImagePath(const char* path) {
     if (!path) return false;
     
-    // Convert path to lowercase (stack buffer)
-    char lowerPath[1024];
-    size_t len = strlen(path);
-    if (len >= sizeof(lowerPath)) len = sizeof(lowerPath) - 1;
+    // Extract basename (component after the last '/')
+    const char* base = strrchr(path, '/');
+    base = base ? base + 1 : path;
+    if (*base == '\0') return false;
+    
+    // Convert basename to lowercase (stack buffer)
+    char lowerName[256];
+    size_t len = strlen(base);
+    if (len >= sizeof(lowerName)) len = sizeof(lowerName) - 1;
     
     for (size_t i = 0; i < len; i++) {
-        lowerPath[i] = tolower((unsigned char)path[i]);
+        lowerName[i] = tolower((unsigned char)base[i]);
     }
-    lowerPath[len] = '\0';
+    lowerName[len] = '\0';
     
-    // Search for suspicious names
+    // Distinctive names: substring match against basename
     for (int i = 0; suspiciousNames[i] != NULL; i++) {
-        if (strstr(lowerPath, suspiciousNames[i]) != NULL) {
+        if (strstr(lowerName, suspiciousNames[i]) != NULL) {
+            return true;
+        }
+    }
+    
+    // Collision-prone tokens: boundary-aware match against basename
+    for (int i = 0; suspiciousBoundaryTokens[i] != NULL; i++) {
+        if (matchesTokenWithBoundary(lowerName, suspiciousBoundaryTokens[i])) {
             return true;
         }
     }
@@ -126,7 +176,7 @@ NSString* DTNCollectNativeSignalsJSON(void) {
         
         for (uint32_t i = 0; i < imageCount && foundCount < 8; i++) {
             const char* imageName = _dyld_get_image_name(i);
-            if (imageName && containsSuspicious(imageName)) {
+            if (imageName && DTNIsSuspiciousImagePath(imageName)) {
                 [dyldSuspicious addObject:escapeJSON(imageName)];
                 foundCount++;
             }
