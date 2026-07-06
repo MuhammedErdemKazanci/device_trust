@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.1] - 2026-07-06
+
+### Fixed
+
+- iOS: Apple's `DTXConnectionServices` framework could be falsely reported as suspicious (`fridaSuspected: true`). The cause was a short `xcon` substring collision in the native dyld image scan, which matched tokens against the full image path. The matcher now uses basename-oriented, boundary-aware matching for suspicious dyld images.
+
+---
+
 ## [2.0.0] - 2026-05-22
 
 ### Added
