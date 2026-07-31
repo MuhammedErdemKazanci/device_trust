@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.0.0] - 2026-07-31
+
+### Changed
+
+- **Breaking:** The minimum Dart SDK is now `^3.12.0` and the minimum Flutter
+  SDK is now `>=3.44.0`. These versions are required by Flutter's plugin
+  migration path for Android built-in Kotlin support.
+- Android: Removed the plugin's Kotlin Gradle Plugin application so AGP 9+ can
+  use its built-in Kotlin support.
+- Android: Replaced the deprecated `kotlinOptions` configuration with the
+  typed Kotlin `compilerOptions` DSL while preserving the JVM 11 target.
+
+### Preserved
+
+- The public Dart API, MethodChannel contract, and runtime detection behavior
+  remain unchanged.
+
+---
+
 ## [2.0.1] - 2026-07-06
 
 ### Fixed

@@ -42,7 +42,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  device_trust: ^2.0.0
+  device_trust: ^3.0.0
 ```
 
 Run:
@@ -131,7 +131,9 @@ Returns `Future<bool>` indicating whether the current platform is supported.
   - `armeabi-v7a` (32-bit ARM)
   - `x86_64` (64-bit x86)
 - **Auto-linking**: CMake/ndk-build handles linking; no additional setup required.
-- **Compatibility**: This plugin relies on your app's Android Gradle Plugin (AGP) and Kotlin versions. If you encounter version conflicts during build, align the AGP/Kotlin versions in your app's root `build.gradle` to match the plugin's requirements (typically AGP 8.0+ and Kotlin 1.9+).
+- **Gradle/Kotlin Compatibility**: Version 3.0.0+ is migrated for Android's
+  built-in Kotlin integration and no longer applies the Kotlin Gradle Plugin.
+  No consumer-side Kotlin configuration is required by `device_trust`.
 - **16KB Page Size Support**: Android devices with 16KB page size are supported (Android 15+ on some devices). The native library is built with `-Wl,-z,max-page-size=16384` for all ABIs. We recommend using a modern NDK (r26+) for optimal compatibility.
 
 ### iOS
@@ -143,8 +145,11 @@ iOS native Flutter plugin integration. Flutter application developers add and
 use `device_trust` as a normal Dart/pub dependency — no manual native
 package configuration is required.
 
-- **Version 2.0.0+** of this Flutter package requires **Flutter 3.41.0 or later**
+- **Versions 2.x** of this Flutter package require **Flutter 3.41.0 or later**
   and **Dart ^3.11.0** for all consumers, regardless of iOS dependency manager.
+- **Version 3.0.0+** requires **Flutter 3.44.0 or later** and **Dart ^3.12.0**
+  for Android built-in Kotlin compatibility. Projects on older Flutter releases
+  should remain on `device_trust: ^2.0.1`.
 - **Swift Package Manager**: Enable Flutter's SPM integration via
   `flutter config --enable-swift-package-manager`, then run your app normally.
   Flutter resolves `device_trust` through its native Swift package target automatically.
