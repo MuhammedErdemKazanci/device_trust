@@ -113,7 +113,7 @@ This is enforced in CI, but contributors should verify locally as well:
 
 **Requirements:**
 
-- **Flutter 3.41.0+** and **Dart 3.11.0+** are required for SPM support.
+- **Flutter 3.44.0+** and **Dart 3.12.0+** are required for development.
 - Do not commit absolute local filesystem paths in Xcode project files.
   If adding the plugin as a local package in the example, ensure the
   `project.pbxproj` reference uses a relative path

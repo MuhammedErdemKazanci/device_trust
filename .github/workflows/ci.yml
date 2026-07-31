@@ -48,6 +48,38 @@ jobs:
       - name: Validate publish
         run: flutter pub publish --dry-run
 
+  android_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Android example
+        run: |
+          cd example
+          set -o pipefail
+          flutter build apk --debug 2>&1 | tee android-build.log
+
+      - name: Verify plugin does not apply KGP
+        run: |
+          if grep -Fq "plugins that apply Kotlin Gradle Plugin (KGP): device_trust" example/android-build.log; then
+            echo "device_trust still applies the Kotlin Gradle Plugin"
+            exit 1
+          fi
+
   ios_pod_lint:
     runs-on: macos-latest
     
