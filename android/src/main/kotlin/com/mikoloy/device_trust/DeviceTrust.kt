@@ -12,12 +12,9 @@ import android.os.Debug
 import android.provider.Settings
 import com.mikoloy.device_trust.DeviceTrustLog
 import org.json.JSONObject
-import java.io.BufferedReader
 import java.io.File
-import java.io.InputStreamReader
 import java.net.InetSocketAddress
 import java.net.Socket
-import java.util.concurrent.TimeUnit
 
 /**
  * [DeviceTrust/Android] Device Trust Report
@@ -203,19 +200,7 @@ object DeviceTrust {
      * Attempt "which su" command (short timeout)
      */
     private fun executeWhichSu(): String? {
-        return try {
-            val process = Runtime.getRuntime().exec("which su")
-            val reader = BufferedReader(InputStreamReader(process.inputStream))
-            val completed = process.waitFor(200, TimeUnit.MILLISECONDS)
-            if (completed) {
-                reader.readLine()
-            } else {
-                process.destroy()
-                null
-            }
-        } catch (e: Exception) {
-            null
-        }
+        return ProcessRunner.readFirstLine("which su", COMMAND_TIMEOUT_MS)
     }
 
     /**
@@ -241,19 +226,7 @@ object DeviceTrust {
      * Read system property (short timeout)
      */
     private fun getSystemProperty(key: String): String {
-        return try {
-            val process = Runtime.getRuntime().exec("getprop $key")
-            val reader = BufferedReader(InputStreamReader(process.inputStream))
-            val completed = process.waitFor(200, TimeUnit.MILLISECONDS)
-            if (completed) {
-                reader.readLine()?.trim() ?: ""
-            } else {
-                process.destroy()
-                ""
-            }
-        } catch (e: Exception) {
-            ""
-        }
+        return ProcessRunner.readFirstLine("getprop $key", COMMAND_TIMEOUT_MS)?.trim().orEmpty()
     }
 
     /**
@@ -588,4 +561,6 @@ object DeviceTrust {
             false
         }
     }
+
+    private const val COMMAND_TIMEOUT_MS = 200L
 }
