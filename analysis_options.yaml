@@ -12,6 +12,9 @@ analyzer:
   exclude:
     - "**/*.g.dart"
     - "**/generated_plugin_registrant.dart"
+    - "build/**"
+    - "android/**"
+    - "ios/**"
   language:
     strict-inference: true
     strict-raw-types: true
