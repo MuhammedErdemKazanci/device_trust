@@ -40,6 +40,7 @@ void main() {
       ]);
 
       expect(await platform.getReportRaw(), {
+        'flags': 49,
         'rootedOrJailbroken': true,
         'emulator': false,
         'devModeEnabled': false,
@@ -54,11 +55,12 @@ void main() {
     });
 
     for (final flag in DeviceTrustFlag.values) {
-      test('maps ${flag.name} to only its matching boolean', () async {
+      test('preserves and decodes the ${flag.name} mask', () async {
         await respondWith([1, flag.mask, <String, Object?>{}]);
 
         final result = await platform.getReportRaw();
 
+        expect(result['flags'], flag.mask);
         expect(
           result['rootedOrJailbroken'],
           flag == DeviceTrustFlag.rootedOrJailbroken,
@@ -80,15 +82,13 @@ void main() {
       });
     }
 
-    test('ignores unknown high bits for forward compatibility', () async {
-      await respondWith([
-        1,
-        (1 << 20) | DeviceTrustFlag.emulator.mask,
-        <String, Object?>{},
-      ]);
+    test('preserves unknown high bits for forward compatibility', () async {
+      final flags = (1 << 20) | DeviceTrustFlag.emulator.mask;
+      await respondWith([1, flags, <String, Object?>{}]);
 
       final result = await platform.getReportRaw();
 
+      expect(result['flags'], flags);
       expect(result['emulator'], isTrue);
       expect(result['rootedOrJailbroken'], isFalse);
       expect(result['debuggerAttached'], isFalse);

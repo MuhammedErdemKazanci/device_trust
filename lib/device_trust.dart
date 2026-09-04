@@ -17,38 +17,44 @@ export 'device_trust_flag.dart';
 /// Missing or invalid fields in a raw platform report default to safe values.
 /// The outer [DeviceTrust.getReport] timeout still throws a [TimeoutException].
 class DeviceTrustReport {
+  /// Compact bit-set representation of the report's security signals.
+  ///
+  /// This is the stored source of truth for the boolean accessors. Use
+  /// [hasFlag] when checking a single signal.
+  final int flags;
+
   /// Device is rooted (Android) or jailbroken (iOS).
   ///
   /// Detected via file path checks, su binaries, root management apps,
   /// sandbox escape tests, and URL scheme queries.
-  final bool rootedOrJailbroken;
+  bool get rootedOrJailbroken => hasFlag(DeviceTrustFlag.rootedOrJailbroken);
 
   /// Running on an emulator (Android) or simulator (iOS).
   ///
   /// Detected via build properties, hardware characteristics, and
   /// compile-time checks (iOS).
-  final bool emulator;
+  bool get emulator => hasFlag(DeviceTrustFlag.emulator);
 
   /// Developer mode is enabled (Android only; always `false` on iOS).
   ///
   /// Reflects the system's "Developer options" setting.
-  final bool devModeEnabled;
+  bool get devModeEnabled => hasFlag(DeviceTrustFlag.devModeEnabled);
 
   /// ADB debugging is enabled (Android only; always `false` on iOS).
   ///
   /// Indicates whether USB debugging is active.
-  final bool adbEnabled;
+  bool get adbEnabled => hasFlag(DeviceTrustFlag.adbEnabled);
 
   /// Frida or other hooking framework is suspected.
   ///
   /// Detected via native memory scanning (RWX segments, suspicious libraries,
   /// DYLD image analysis, environment variables).
-  final bool fridaSuspected;
+  bool get fridaSuspected => hasFlag(DeviceTrustFlag.fridaSuspected);
 
   /// Debugger is attached to the current process.
   ///
   /// Detected via system calls (Android: TracerPid, iOS: sysctl P_TRACED).
-  final bool debuggerAttached;
+  bool get debuggerAttached => hasFlag(DeviceTrustFlag.debuggerAttached);
 
   /// Platform-specific signals and metadata (e.g., detected paths, libraries).
   ///
@@ -62,44 +68,25 @@ class DeviceTrustReport {
 
   /// Creates a [DeviceTrustReport] with the given fields.
   const DeviceTrustReport({
-    required this.rootedOrJailbroken,
-    required this.emulator,
-    required this.devModeEnabled,
-    required this.adbEnabled,
-    required this.fridaSuspected,
-    required this.debuggerAttached,
+    required bool rootedOrJailbroken,
+    required bool emulator,
+    required bool devModeEnabled,
+    required bool adbEnabled,
+    required bool fridaSuspected,
+    required bool debuggerAttached,
     required this.details,
-  });
+  }) : flags =
+           (rootedOrJailbroken ? 1 : 0) |
+           (emulator ? 2 : 0) |
+           (devModeEnabled ? 4 : 0) |
+           (adbEnabled ? 8 : 0) |
+           (fridaSuspected ? 16 : 0) |
+           (debuggerAttached ? 32 : 0);
 
-  /// Compact bit-set representation of the six boolean security signals.
-  ///
-  /// Use [hasFlag] when checking a single signal. The existing boolean fields
-  /// remain the source of truth for the public report model.
-  int get flags {
-    var value = 0;
-    if (rootedOrJailbroken) {
-      value |= DeviceTrustFlag.rootedOrJailbroken.mask;
-    }
-    if (emulator) {
-      value |= DeviceTrustFlag.emulator.mask;
-    }
-    if (devModeEnabled) {
-      value |= DeviceTrustFlag.devModeEnabled.mask;
-    }
-    if (adbEnabled) {
-      value |= DeviceTrustFlag.adbEnabled.mask;
-    }
-    if (fridaSuspected) {
-      value |= DeviceTrustFlag.fridaSuspected.mask;
-    }
-    if (debuggerAttached) {
-      value |= DeviceTrustFlag.debuggerAttached.mask;
-    }
-    return value;
-  }
+  const DeviceTrustReport._({required this.flags, required this.details});
 
   /// Whether this report contains [flag].
-  bool hasFlag(DeviceTrustFlag flag) => flags & flag.mask != 0;
+  bool hasFlag(DeviceTrustFlag flag) => flag.isSetIn(flags);
 
   /// Constructs a [DeviceTrustReport] from a raw map returned by the platform.
   ///
@@ -112,15 +99,37 @@ class DeviceTrustReport {
         ? Map<String, dynamic>.from(rawDetails)
         : <String, dynamic>{};
 
-    return DeviceTrustReport(
-      rootedOrJailbroken: map['rootedOrJailbroken'] == true,
-      emulator: map['emulator'] == true,
-      devModeEnabled: map['devModeEnabled'] == true,
-      adbEnabled: map['adbEnabled'] == true,
-      fridaSuspected: map['fridaSuspected'] == true,
-      debuggerAttached: map['debuggerAttached'] == true,
+    final rawFlags = map['flags'];
+
+    return DeviceTrustReport._(
+      flags: rawFlags is int && rawFlags >= 0
+          ? rawFlags
+          : _flagsFromLegacyMap(map),
       details: details,
     );
+  }
+
+  static int _flagsFromLegacyMap(Map<String, Object?> map) {
+    var flags = 0;
+    if (map['rootedOrJailbroken'] == true) {
+      flags |= DeviceTrustFlag.rootedOrJailbroken.mask;
+    }
+    if (map['emulator'] == true) {
+      flags |= DeviceTrustFlag.emulator.mask;
+    }
+    if (map['devModeEnabled'] == true) {
+      flags |= DeviceTrustFlag.devModeEnabled.mask;
+    }
+    if (map['adbEnabled'] == true) {
+      flags |= DeviceTrustFlag.adbEnabled.mask;
+    }
+    if (map['fridaSuspected'] == true) {
+      flags |= DeviceTrustFlag.fridaSuspected.mask;
+    }
+    if (map['debuggerAttached'] == true) {
+      flags |= DeviceTrustFlag.debuggerAttached.mask;
+    }
+    return flags;
   }
 
   /// Converts this report to a raw map for serialization.

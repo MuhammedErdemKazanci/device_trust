@@ -114,7 +114,7 @@ Returns a `Future<DeviceTrustReport>` with the following fields:
 | `devModeEnabled` | `bool` | Developer mode enabled (Android only) |
 | `adbEnabled` | `bool` | ADB debugging enabled (Android only) |
 | `details` | `Map<String, dynamic>` | Platform-specific signals and metadata |
-| `flags` | `int` | Compact bit-set computed from the six boolean fields |
+| `flags` | `int` | Stored compact bit-set backing the six boolean accessors |
 
 Use `hasFlag` with `DeviceTrustFlag` when a bit-set check is more convenient:
 
@@ -151,8 +151,11 @@ Format version `1` assigns the six report booleans to these bit masks:
 | `16` | `fridaSuspected` |
 | `32` | `debuggerAttached` |
 
-Readers ignore currently unassigned higher bits in version `1`, so compatible
-native implementations can add summary signals without changing existing ones.
+The Dart report stores the received `flags` value as its source of truth and
+derives the six named boolean accessors from their masks. Unknown higher bits
+remain available through `report.flags` while existing accessors ignore them,
+so compatible native implementations can add summary signals without changing
+existing ones.
 
 For example, `[1, 17, details]` means format version `1` with
 `rootedOrJailbroken` and `fridaSuspected` set (`1 + 16`). The `details` map

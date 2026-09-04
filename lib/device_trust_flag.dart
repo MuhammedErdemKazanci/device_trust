@@ -25,4 +25,7 @@ enum DeviceTrustFlag {
 
   /// Stable bit mask used by the compact native report protocol.
   final int mask;
+
+  /// Whether this signal is set in [flags].
+  bool isSetIn(int flags) => flags & mask != 0;
 }
