@@ -50,18 +50,16 @@ class MethodChannelDeviceTrust extends DeviceTrustPlatform {
     }
 
     return {
-      'rootedOrJailbroken': _hasFlag(flags, DeviceTrustFlag.rootedOrJailbroken),
-      'emulator': _hasFlag(flags, DeviceTrustFlag.emulator),
-      'devModeEnabled': _hasFlag(flags, DeviceTrustFlag.devModeEnabled),
-      'adbEnabled': _hasFlag(flags, DeviceTrustFlag.adbEnabled),
-      'fridaSuspected': _hasFlag(flags, DeviceTrustFlag.fridaSuspected),
-      'debuggerAttached': _hasFlag(flags, DeviceTrustFlag.debuggerAttached),
+      'flags': flags,
+      'rootedOrJailbroken': DeviceTrustFlag.rootedOrJailbroken.isSetIn(flags),
+      'emulator': DeviceTrustFlag.emulator.isSetIn(flags),
+      'devModeEnabled': DeviceTrustFlag.devModeEnabled.isSetIn(flags),
+      'adbEnabled': DeviceTrustFlag.adbEnabled.isSetIn(flags),
+      'fridaSuspected': DeviceTrustFlag.fridaSuspected.isSetIn(flags),
+      'debuggerAttached': DeviceTrustFlag.debuggerAttached.isSetIn(flags),
       'details': Map<String, Object?>.from(details),
     };
   }
-
-  static bool _hasFlag(int flags, DeviceTrustFlag flag) =>
-      flags & flag.mask != 0;
 
   static PlatformException _invalidReportPayload() {
     return PlatformException(

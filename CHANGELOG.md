@@ -13,14 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `DeviceTrustFlag`, `DeviceTrustReport.flags`, and
   `DeviceTrustReport.hasFlag(...)` for stable bit-mask access to the six summary
-  security signals.
+  security signals. Reports store the compact value as their source of truth
+  and derive the existing boolean accessors from it.
 
 ### Changed
 
 - Android and iOS now encode native reports as a compact, versioned
   `[formatVersion, flags, details]` platform-channel payload. The Dart decoder
   validates version 1, remains compatible with legacy verbose maps during
-  upgrades, and ignores unassigned higher bits.
+  upgrades, and preserves unassigned higher bits for future additions.
 - Clarified that compact transport is a defense-in-depth encoding, not
   encryption, authentication, attestation, or a trust boundary.
 

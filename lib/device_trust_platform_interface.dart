@@ -31,7 +31,8 @@ abstract class DeviceTrustPlatform extends PlatformInterface {
 
   /// Collects device trust signals as a raw map.
   ///
-  /// Platform implementations should return a map with keys:
+  /// Platform implementations should return the six boolean signal keys and:
+  /// - `flags` (non-negative int; optional for legacy implementations)
   /// - `rootedOrJailbroken` (bool)
   /// - `emulator` (bool)
   /// - `devModeEnabled` (bool)
@@ -39,6 +40,9 @@ abstract class DeviceTrustPlatform extends PlatformInterface {
   /// - `fridaSuspected` (bool)
   /// - `debuggerAttached` (bool)
   /// - `details` (`Map<String, dynamic>`)
+  ///
+  /// [DeviceTrustReport] prefers `flags` when available and derives it from the
+  /// six legacy boolean keys otherwise.
   Future<Map<String, Object?>> getReportRaw();
 
   /// Returns `true` if the platform side responds to method calls.

@@ -6,6 +6,7 @@ class _FakePlatform extends DeviceTrustPlatform {
   @override
   Future<Map<String, Object?>> getReportRaw() async {
     return {
+      'flags': 17,
       'rootedOrJailbroken': true,
       'emulator': false,
       'devModeEnabled': false,
@@ -33,6 +34,9 @@ void main() {
         DeviceTrustFlag.debuggerAttached: 32,
       },
     );
+
+    expect(DeviceTrustFlag.emulator.isSetIn(2), isTrue);
+    expect(DeviceTrustFlag.emulator.isSetIn(1), isFalse);
   });
 
   test('DeviceTrustReport.fromMap defaults all signals', () {
@@ -50,6 +54,7 @@ void main() {
 
   test('DeviceTrustReport.fromMap safely defaults invalid field types', () {
     final report = DeviceTrustReport.fromMap({
+      'flags': -1,
       'rootedOrJailbroken': 'true',
       'emulator': 1,
       'devModeEnabled': null,
@@ -69,7 +74,30 @@ void main() {
     expect(report.details, isEmpty);
   });
 
-  test('DeviceTrustReport.fromMap fills every existing field', () {
+  test(
+    'DeviceTrustReport stores compact flags and derives boolean accessors',
+    () {
+      final flags =
+          (1 << 20) |
+          DeviceTrustFlag.rootedOrJailbroken.mask |
+          DeviceTrustFlag.fridaSuspected.mask;
+      final report = DeviceTrustReport.fromMap({
+        'flags': flags,
+        'details': {'source': 'compact'},
+      });
+
+      expect(report.flags, flags);
+      expect(report.rootedOrJailbroken, isTrue);
+      expect(report.emulator, isFalse);
+      expect(report.devModeEnabled, isFalse);
+      expect(report.adbEnabled, isFalse);
+      expect(report.fridaSuspected, isTrue);
+      expect(report.debuggerAttached, isFalse);
+      expect(report.details, {'source': 'compact'});
+    },
+  );
+
+  test('DeviceTrustReport.fromMap accepts every legacy boolean field', () {
     final report = DeviceTrustReport.fromMap({
       'rootedOrJailbroken': true,
       'emulator': true,
@@ -108,6 +136,25 @@ void main() {
     expect(report.hasFlag(DeviceTrustFlag.adbEnabled), isFalse);
     expect(report.hasFlag(DeviceTrustFlag.fridaSuspected), isTrue);
     expect(report.hasFlag(DeviceTrustFlag.debuggerAttached), isFalse);
+  });
+
+  test('constructor stores every boolean as its matching flag', () {
+    for (final flag in DeviceTrustFlag.values) {
+      final report = DeviceTrustReport(
+        rootedOrJailbroken: flag == DeviceTrustFlag.rootedOrJailbroken,
+        emulator: flag == DeviceTrustFlag.emulator,
+        devModeEnabled: flag == DeviceTrustFlag.devModeEnabled,
+        adbEnabled: flag == DeviceTrustFlag.adbEnabled,
+        fridaSuspected: flag == DeviceTrustFlag.fridaSuspected,
+        debuggerAttached: flag == DeviceTrustFlag.debuggerAttached,
+        details: const {},
+      );
+
+      expect(report.flags, flag.mask);
+      for (final candidate in DeviceTrustFlag.values) {
+        expect(report.hasFlag(candidate), candidate == flag);
+      }
+    }
   });
 
   test('toMap preserves the existing public serialization shape', () {
