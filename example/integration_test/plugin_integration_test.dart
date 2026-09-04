@@ -2,6 +2,7 @@
 // Simple smoke test to ensure basic functionality works
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:device_trust/device_trust.dart';
 import 'package:device_trust_example/main.dart';
 
 void main() {
@@ -24,5 +25,15 @@ void main() {
       find.text('Tap the button above to collect device trust signals.'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('Plugin returns a report through the platform channel', (
+    WidgetTester tester,
+  ) async {
+    final report = await DeviceTrust.getReport(
+      timeout: const Duration(seconds: 10),
+    );
+
+    expect(report, isA<DeviceTrustReport>());
   });
 }
