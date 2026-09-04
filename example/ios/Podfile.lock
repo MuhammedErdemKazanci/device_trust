@@ -1,5 +1,5 @@
 PODS:
-  - device_trust (3.0.0):
+  - device_trust (3.1.0):
     - Flutter
   - Flutter (1.0.0)
   - integration_test (0.0.1):
@@ -19,7 +19,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/integration_test/ios"
 
 SPEC CHECKSUMS:
-  device_trust: 4cffa108c920592cc6b22989fdd8be43c7fb0352
+  device_trust: 5638e05a32e6f81520c03bed0c51a254e4c8eee8
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
 

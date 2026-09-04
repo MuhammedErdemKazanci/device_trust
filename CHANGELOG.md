@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.0] - 2026-09-04
+
+### Added
+
+- Added `DeviceTrustFlag`, `DeviceTrustReport.flags`, and
+  `DeviceTrustReport.hasFlag(...)` for stable bit-mask access to the six summary
+  security signals.
+
+### Changed
+
+- Android and iOS now encode native reports as a compact, versioned
+  `[formatVersion, flags, details]` platform-channel payload. The Dart decoder
+  validates version 1, remains compatible with legacy verbose maps during
+  upgrades, and ignores unassigned higher bits.
+- Clarified that compact transport is a defense-in-depth encoding, not
+  encryption, authentication, attestation, or a trust boundary.
+
+### Fixed
+
+- Android: Short-lived shell command timeouts now work on API 24 without
+  calling the API 26-only timed `Process.waitFor` overload.
+
+### Validation
+
+- Added native report-encoding tests, real Android API 24 coverage, and an iOS
+  simulator platform-channel integration check.
+
+---
+
 ## [3.0.0] - 2026-07-31
 
 ### Changed
