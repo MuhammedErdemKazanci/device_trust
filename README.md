@@ -42,7 +42,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  device_trust: ^3.0.0
+  device_trust: ^3.1.0
 ```
 
 Run:
