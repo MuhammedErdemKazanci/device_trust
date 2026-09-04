@@ -13,7 +13,7 @@ public class DeviceTrustPlugin: NSObject, FlutterPlugin {
     case "getDeviceTrustReport":
       // Call DeviceTrust.buildReport() defined in DeviceTrust.swift
       let report = DeviceTrust.buildReport()
-      result(report.toMap())
+      result(report.toCompactPayload())
     default:
       result(FlutterMethodNotImplemented)
     }

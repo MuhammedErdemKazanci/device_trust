@@ -21,16 +21,7 @@ class DeviceTrustPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
       "getDeviceTrustReport" -> {
         try {
           val report = DeviceTrust.buildReport(appContext)
-          val map = mapOf(
-            "rootedOrJailbroken" to report.rootedOrJailbroken,
-            "emulator" to report.emulator,
-            "devModeEnabled" to report.devModeEnabled,
-            "adbEnabled" to report.adbEnabled,
-            "fridaSuspected" to report.fridaSuspected,
-            "debuggerAttached" to report.debuggerAttached,
-            "details" to report.details
-          )
-          result.success(map)
+          result.success(report.toWirePayload())
         } catch (e: Exception) {
           result.error("DEVICE_TRUST_ERROR", e.message, null)
         }

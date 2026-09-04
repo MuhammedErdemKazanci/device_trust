@@ -33,7 +33,15 @@ void main() {
     final report = await DeviceTrust.getReport(
       timeout: const Duration(seconds: 10),
     );
+    final emulatorSignals = report.details['emulatorSignals'];
+    final expectedEmulator =
+        report.details['simulator'] == true ||
+        report.details['emulatorStrong'] == true ||
+        (emulatorSignals is num && emulatorSignals >= 2);
 
     expect(report, isA<DeviceTrustReport>());
+    expect(report.emulator, expectedEmulator);
+    expect(report.hasFlag(DeviceTrustFlag.emulator), expectedEmulator);
+    expect(report.flags, inInclusiveRange(0, 63));
   });
 }
