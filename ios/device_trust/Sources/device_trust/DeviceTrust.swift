@@ -12,6 +12,14 @@ import device_trust_native
 // MARK: - DeviceTrustReport
 
 struct DeviceTrustReport {
+    private static let payloadVersion: Int64 = 1
+    private static let rootedOrJailbrokenMask: Int64 = 1
+    private static let emulatorMask: Int64 = 2
+    private static let devModeEnabledMask: Int64 = 4
+    private static let adbEnabledMask: Int64 = 8
+    private static let fridaSuspectedMask: Int64 = 16
+    private static let debuggerAttachedMask: Int64 = 32
+
     let rootedOrJailbroken: Bool
     let emulator: Bool
     let devModeEnabled: Bool
@@ -19,17 +27,17 @@ struct DeviceTrustReport {
     let fridaSuspected: Bool
     let debuggerAttached: Bool
     let details: [String: Any]
-    
-    func toMap() -> [String: Any] {
-        return [
-            "rootedOrJailbroken": rootedOrJailbroken,
-            "emulator": emulator,
-            "devModeEnabled": devModeEnabled,
-            "adbEnabled": adbEnabled,
-            "fridaSuspected": fridaSuspected,
-            "debuggerAttached": debuggerAttached,
-            "details": details
-        ]
+
+    func toCompactPayload() -> [Any] {
+        var flags: Int64 = 0
+        if rootedOrJailbroken { flags |= Self.rootedOrJailbrokenMask }
+        if emulator { flags |= Self.emulatorMask }
+        if devModeEnabled { flags |= Self.devModeEnabledMask }
+        if adbEnabled { flags |= Self.adbEnabledMask }
+        if fridaSuspected { flags |= Self.fridaSuspectedMask }
+        if debuggerAttached { flags |= Self.debuggerAttachedMask }
+
+        return [Self.payloadVersion, flags, details]
     }
 }
 

@@ -65,7 +65,8 @@ The `device_trust` plugin provides **heuristic detection** of device compromise.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 2.x.x   | :white_check_mark: |
+| 3.x.x   | :white_check_mark: |
+| 2.x.x   | :x:                |
 | 1.x.x   | :x:                |
 | < 1.0   | :x:                |
 
@@ -76,6 +77,11 @@ Only the latest stable version receives security updates.
 - **Bypass techniques**: Root cloaking (Magisk Hide), Frida stealth mode
 - **Platform constraints**: Some iOS checks work only on physical devices
 - **Performance trade-offs**: Detection speed vs. thoroughness
+- **Compact transport is not tamper protection**: Only the six summary flags are
+  bit-packed; diagnostic details remain descriptive. The versioned payload is
+  not encryption, authentication, or attestation. A client-side attacker can
+  still observe or alter it or the decoded Dart report, so security decisions
+  should not rely on this encoding as a trust boundary.
 
 See [README.md](README.md#limitations--security-notes) for details.
 

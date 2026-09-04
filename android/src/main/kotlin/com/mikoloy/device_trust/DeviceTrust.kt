@@ -29,7 +29,33 @@ data class DeviceTrustReport(
     val fridaSuspected: Boolean,
     val debuggerAttached: Boolean,
     val details: Map<String, Any?>
-)
+) {
+    /**
+     * Encodes the report for the platform channel using a compact, versioned
+     * wire format: [version, flags, details].
+     */
+    internal fun toWirePayload(): List<Any?> {
+        var flags = 0L
+        if (rootedOrJailbroken) flags = flags or ROOTED_OR_JAILBROKEN_MASK
+        if (emulator) flags = flags or EMULATOR_MASK
+        if (devModeEnabled) flags = flags or DEV_MODE_ENABLED_MASK
+        if (adbEnabled) flags = flags or ADB_ENABLED_MASK
+        if (fridaSuspected) flags = flags or FRIDA_SUSPECTED_MASK
+        if (debuggerAttached) flags = flags or DEBUGGER_ATTACHED_MASK
+
+        return listOf(WIRE_FORMAT_VERSION, flags, details)
+    }
+
+    internal companion object {
+        const val WIRE_FORMAT_VERSION = 1
+        const val ROOTED_OR_JAILBROKEN_MASK = 1L
+        const val EMULATOR_MASK = 2L
+        const val DEV_MODE_ENABLED_MASK = 4L
+        const val ADB_ENABLED_MASK = 8L
+        const val FRIDA_SUSPECTED_MASK = 16L
+        const val DEBUGGER_ATTACHED_MASK = 32L
+    }
+}
 
 /**
  * DeviceTrust - Detects device security posture without third-party libraries

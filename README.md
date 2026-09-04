@@ -114,10 +114,49 @@ Returns a `Future<DeviceTrustReport>` with the following fields:
 | `devModeEnabled` | `bool` | Developer mode enabled (Android only) |
 | `adbEnabled` | `bool` | ADB debugging enabled (Android only) |
 | `details` | `Map<String, dynamic>` | Platform-specific signals and metadata |
+| `flags` | `int` | Compact bit-set computed from the six boolean fields |
+
+Use `hasFlag` with `DeviceTrustFlag` when a bit-set check is more convenient:
+
+```dart
+if (report.hasFlag(DeviceTrustFlag.fridaSuspected)) {
+  print('Hooking framework suspected');
+}
+
+print('Compact flags: ${report.flags}');
+```
 
 ### `DeviceTrust.isSupported()`
 
 Returns `Future<bool>` indicating whether the current platform is supported.
+
+### Native Transport Format
+
+The public Dart API remains the typed `DeviceTrustReport` described above. Across
+the internal platform channel, Android and iOS encode each report as a compact,
+versioned payload:
+
+```text
+[formatVersion, flags, details]
+```
+
+Format version `1` assigns the six report booleans to these bit masks:
+
+| Bit mask | Dart field |
+| -------- | ---------- |
+| `1` | `rootedOrJailbroken` |
+| `2` | `emulator` |
+| `4` | `devModeEnabled` |
+| `8` | `adbEnabled` |
+| `16` | `fridaSuspected` |
+| `32` | `debuggerAttached` |
+
+Readers ignore currently unassigned higher bits in version `1`, so compatible
+native implementations can add summary signals without changing existing ones.
+
+For example, `[1, 17, details]` means format version `1` with
+`rootedOrJailbroken` and `fridaSuspected` set (`1 + 16`). The `details` map
+continues to contain descriptive, platform-specific diagnostic signals.
 
 ---
 
@@ -188,11 +227,17 @@ For jailbreak detection, the plugin checks if certain URL schemes can be opened 
 
 ---
 
-## Performance & Fail-Soft Behavior
+## Performance & Error Behavior
 
 - **Native Scan Duration**: Typically 1–5 ms for file checks, process inspection, and memory analysis.
 - **Total Time**: Targets 1–20 ms end-to-end (native + Dart overhead).
-- **Fail-Soft**: If the native library fails to load, times out, or throws an error, the plugin returns safe defaults (all flags `false`, empty details). **The app will not crash.**
+- **Fail-soft signal collection**: Individual native checks isolate recoverable
+  failures and record diagnostic information where possible, so one unavailable
+  signal does not invalidate the whole report.
+- **API errors remain explicit**: The outer `DeviceTrust.getReport()` timeout
+  throws `TimeoutException`; missing, malformed, or failed platform-channel
+  responses can throw Flutter platform exceptions. Callers should handle these
+  errors according to their own risk policy.
 
 ---
 
@@ -220,6 +265,17 @@ This plugin uses **heuristic detection**, which can be bypassed by:
 
 - **Emulators/Simulators** are flagged as compromised by default. In production, you may want to allow them for internal testing.
 - **Debug mode** always attaches a debugger—this is expected during development.
+
+### Compact Transport Is Not Tamper Protection
+
+The bit-packed native payload makes the six summary boolean field names less
+explicit on the platform channel, but it is only a small defense-in-depth
+measure. The diagnostic `details` map remains descriptive, and the encoding is
+not encryption, authentication, attestation, or anti-hooking protection. An
+attacker who controls the client can still observe or modify the numeric payload,
+hook the decoder, or alter the resulting Dart object. Do not use the transport
+format as a trust boundary; combine multiple signals with server-side validation
+and platform attestation where appropriate.
 
 ---
 

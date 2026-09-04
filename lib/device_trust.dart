@@ -1,6 +1,9 @@
 // Public Dart API for device_trust: typed model + convenience methods.
 import 'dart:async';
+import 'device_trust_flag.dart';
 import 'device_trust_platform_interface.dart';
+
+export 'device_trust_flag.dart';
 
 /// Device trust report containing security signals from the native platform.
 ///
@@ -11,8 +14,8 @@ import 'device_trust_platform_interface.dart';
 /// - Debugger attachment detection
 /// - Developer mode and ADB status (Android only)
 ///
-/// All boolean flags default to `false` if the native layer fails or times out
-/// (fail-soft behavior).
+/// Missing or invalid fields in a raw platform report default to safe values.
+/// The outer [DeviceTrust.getReport] timeout still throws a [TimeoutException].
 class DeviceTrustReport {
   /// Device is rooted (Android) or jailbroken (iOS).
   ///
@@ -68,19 +71,55 @@ class DeviceTrustReport {
     required this.details,
   });
 
+  /// Compact bit-set representation of the six boolean security signals.
+  ///
+  /// Use [hasFlag] when checking a single signal. The existing boolean fields
+  /// remain the source of truth for the public report model.
+  int get flags {
+    var value = 0;
+    if (rootedOrJailbroken) {
+      value |= DeviceTrustFlag.rootedOrJailbroken.mask;
+    }
+    if (emulator) {
+      value |= DeviceTrustFlag.emulator.mask;
+    }
+    if (devModeEnabled) {
+      value |= DeviceTrustFlag.devModeEnabled.mask;
+    }
+    if (adbEnabled) {
+      value |= DeviceTrustFlag.adbEnabled.mask;
+    }
+    if (fridaSuspected) {
+      value |= DeviceTrustFlag.fridaSuspected.mask;
+    }
+    if (debuggerAttached) {
+      value |= DeviceTrustFlag.debuggerAttached.mask;
+    }
+    return value;
+  }
+
+  /// Whether this report contains [flag].
+  bool hasFlag(DeviceTrustFlag flag) => flags & flag.mask != 0;
+
   /// Constructs a [DeviceTrustReport] from a raw map returned by the platform.
   ///
   /// Missing or invalid fields default to safe values (`false` for booleans,
   /// empty map for details).
   factory DeviceTrustReport.fromMap(Map<String, Object?> map) {
+    final rawDetails = map['details'];
+    final details =
+        rawDetails is Map && rawDetails.keys.every((key) => key is String)
+        ? Map<String, dynamic>.from(rawDetails)
+        : <String, dynamic>{};
+
     return DeviceTrustReport(
-      rootedOrJailbroken: (map['rootedOrJailbroken'] as bool?) ?? false,
-      emulator: (map['emulator'] as bool?) ?? false,
-      devModeEnabled: (map['devModeEnabled'] as bool?) ?? false,
-      adbEnabled: (map['adbEnabled'] as bool?) ?? false,
-      fridaSuspected: (map['fridaSuspected'] as bool?) ?? false,
-      debuggerAttached: (map['debuggerAttached'] as bool?) ?? false,
-      details: Map<String, dynamic>.from((map['details'] as Map?) ?? const {}),
+      rootedOrJailbroken: map['rootedOrJailbroken'] == true,
+      emulator: map['emulator'] == true,
+      devModeEnabled: map['devModeEnabled'] == true,
+      adbEnabled: map['adbEnabled'] == true,
+      fridaSuspected: map['fridaSuspected'] == true,
+      debuggerAttached: map['debuggerAttached'] == true,
+      details: details,
     );
   }
 

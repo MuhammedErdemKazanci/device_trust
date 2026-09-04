@@ -3,8 +3,10 @@ import 'device_trust_method_channel.dart';
 
 /// Platform interface for the device_trust plugin.
 ///
-/// This exposes low-level, raw map results so the public API wrapper
-/// ([DeviceTrust]) can provide a typed model ([DeviceTrustReport]).
+/// This exposes normalized, raw map results so the public API wrapper
+/// ([DeviceTrust]) can provide a typed model ([DeviceTrustReport]). The default
+/// MethodChannel implementation decodes the native compact wire payload before
+/// returning this map.
 ///
 /// Platform-specific implementations should extend this class and override
 /// [getReportRaw] and [isSupported].
